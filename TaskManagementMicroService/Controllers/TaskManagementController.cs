@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementMicroService.Models;
 using Task = TaskManagementMicroService.Models.Task;
-
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -45,6 +44,30 @@ namespace TaskManagementMicroService.Controllers
         public IEnumerable<SubTask> GetSubTaskList(int id)
         {
             return dbContext.SubTask.Where(x => x.TaskId == id).ToList();
+        }
+
+        [HttpGet("TaskListInCSV")]
+        public IActionResult TaskListInCSV()
+        {
+            var taskList = dbContext.Task.ToList();
+            var builder = new StringBuilder();
+            builder.AppendLine("Task Id, Task Name, Task Description, Start Date, Finish Date, State");
+            if(taskList.Count() != 0)
+            {
+                var inProgressTask = taskList.Where(x => x.State == "inProgress").ToList();
+                if (inProgressTask.Count() != 0)
+                {
+                    foreach (var t in inProgressTask)
+                    {
+                        builder.AppendLine($"{t.TaskId}, {t.TaskName},{t.TaskDescription},{t.StartDate}, {t.FinishDate}, {t.State}");
+                    }
+                    return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TaskList.csv");
+                }
+                else
+                    return StatusCode(StatusCodes.Status404NotFound);
+            }
+
+            return StatusCode(StatusCodes.Status404NotFound);
         }
 
         /// <summary>
