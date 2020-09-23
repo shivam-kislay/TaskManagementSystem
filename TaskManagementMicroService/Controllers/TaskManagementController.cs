@@ -33,19 +33,35 @@ namespace TaskManagementMicroService.Controllers
             return dbContext.Task.ToList();
         }
 
-        // GET api/<TaskManagementController>/5
+        /// <summary>
+        /// This method returns the task with the input taskId
+        /// url: api/TaskManagement/TaskByID/{id}
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("TaskByID/{id}")]
         public Task Get(int id)
         {
             return dbContext.Task.Where(x => x.TaskId == id).FirstOrDefault();
         }
 
+        /// <summary>
+        /// This method returns the Subtask with the input sub-taskId
+        /// url: api/TaskManagement/SubTaskByTaskID/{id}
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("SubTaskByTaskID/{id}")]
         public IEnumerable<SubTask> GetSubTaskList(int id)
         {
             return dbContext.SubTask.Where(x => x.TaskId == id).ToList();
         }
 
+        /// <summary>
+        /// This method returns a CSV file with list of tasks with status as inProgress
+        /// url: api/TaskManagement/TaskListInCSV
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("TaskListInCSV")]
         public IActionResult TaskListInCSV()
         {
@@ -72,7 +88,7 @@ namespace TaskManagementMicroService.Controllers
 
         /// <summary>
         /// This is a post method that is used to add a new task to the task table
-        /// URL: api/<TaskManagementController>/Task
+        /// URL: api/TaskManagement/Task
         /// </summary>
         /// <param name="taskModel"></param>
         [HttpPost("Task")]
@@ -103,7 +119,7 @@ namespace TaskManagementMicroService.Controllers
         /// This is a post method that is used to add a new sub task to the SubTask table
         /// and based on the state of subtasks under a parent task update the state of the 
         /// parent task
-        /// URL: api/<TaskManagementController>/SubTask
+        /// URL: api/TaskManagement/SubTask
         /// </summary>
         /// <param name="subTaskModel"></param>
         [HttpPost("SubTask")]
@@ -131,7 +147,7 @@ namespace TaskManagementMicroService.Controllers
 
         /// <summary>
         /// This a post method to update the status of the task
-        /// url: api/<TaskManagementController>/UpdateTaskStatus
+        /// url: api/TaskManagement/UpdateTaskStatus
         /// </summary>
         /// <param name="taskId"></param>
         /// <param name="status"></param>
@@ -152,6 +168,13 @@ namespace TaskManagementMicroService.Controllers
             
         }
 
+        /// <summary>
+        /// This a post method to update the status of the sub task
+        /// url: api/TaskManagement/UpdateSubTaskStatus
+        /// </summary>
+        /// <param name="subTaskId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [HttpPost("UpdateSubTaskStatus")]
         public IActionResult UpdateSubTaskStatus([FromBody] int subTaskId, string status)
         {
@@ -169,7 +192,12 @@ namespace TaskManagementMicroService.Controllers
 
         }
 
-
+        /// <summary>
+        /// Method to delete the task with the given id only when
+        /// it has no subtask
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("DeleteTask/{id}")]
         public IActionResult DeleteTask(int id)
         {
@@ -185,7 +213,12 @@ namespace TaskManagementMicroService.Controllers
             return (StatusCode(StatusCodes.Status304NotModified));
         }
 
-
+        /// <summary>
+        /// Delete subtask with the given id and update the parent task status
+        /// based on the status of the sub tasks
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("DeleteSubTask/{id}")]
         public IActionResult DeleteSubTask(int id)
         {
@@ -201,7 +234,10 @@ namespace TaskManagementMicroService.Controllers
             return (StatusCode(StatusCodes.Status304NotModified));
         }
 
-                
+        /// <summary>
+        /// Private method used my the action methods to update the parent task status
+        /// </summary>
+        /// <param name="taskID"></param>        
         private void UpdateTask(int taskID)
         {
             var task = Get(taskID);
