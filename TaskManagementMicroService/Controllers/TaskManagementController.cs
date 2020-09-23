@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagementMicroService.Models;
+using Task = TaskManagementMicroService.Models.Task;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,11 +15,22 @@ namespace TaskManagementMicroService.Controllers
     [ApiController]
     public class TaskManagementController : ControllerBase
     {
-        // GET: api/<TaskManagementController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        TaskManagementDatabaseSystemContext dbContext;
+        public TaskManagementController()
         {
-            return new string[] { "value1", "value2" };
+            dbContext = new TaskManagementDatabaseSystemContext();
+        }
+
+        /// <summary>
+        /// This is the default method that runs first once the solution is run.
+        /// It returns the list of Tasks in the Task table
+        /// URL : api/<TaskManagementController>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<Task> Get()
+        {
+            return GetTaskList();
         }
 
         // GET api/<TaskManagementController>/5
@@ -42,6 +56,14 @@ namespace TaskManagementMicroService.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        /// <summary>
+        /// method to return the list of tasks from the task table
+        /// </summary>
+        private List<Task> GetTaskList()
+        {
+            return dbContext.Task.ToList();
         }
     }
 }

@@ -33,9 +33,13 @@ namespace TaskManagementMicroService.Models
             {
                 entity.Property(e => e.SubTaskId).HasColumnName("SubTaskID");
 
-                entity.Property(e => e.EndDate).HasColumnType("date");
+                entity.Property(e => e.FinishDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.State)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TaskDescription)
                     .HasMaxLength(50)
@@ -59,9 +63,13 @@ namespace TaskManagementMicroService.Models
             {
                 entity.Property(e => e.TaskId).HasColumnName("TaskID");
 
-                entity.Property(e => e.EndDate).HasColumnType("date");
+                entity.Property(e => e.FinishDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.State)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TaskDescription)
                     .HasMaxLength(50)
