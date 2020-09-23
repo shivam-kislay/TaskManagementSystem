@@ -1,0 +1,127 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/TaskByID/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/TaskByID/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/SubTaskByTaskID/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/SubTaskByTaskID/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/TaskListInCSV",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/TaskListInCSV",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/Task",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/Task",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/SubTask",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/SubTask",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/UpdateTaskStatus",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/UpdateTaskStatus",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/UpdateSubTaskStatus",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/UpdateSubTaskStatus",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/DeleteTask/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/DeleteTask/{id}",
+      "UpstreamHttpMethod": [ "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/TaskManagement/DeleteSubTask/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44335"
+        }
+      ],
+      "UpstreamPathTemplate": "/TaskManagement/DeleteSubTask/{id}",
+      "UpstreamHttpMethod": [ "DELETE" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:44300/"
+  }
+}
