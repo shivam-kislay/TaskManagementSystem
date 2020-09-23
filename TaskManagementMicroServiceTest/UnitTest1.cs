@@ -13,7 +13,7 @@ namespace TaskManagementMicroServiceTest
         TaskManagementController TMSController = new TaskManagementController();
 
         [Fact]
-        public void Test1()
+        public void TestTask()
         {
             DateTime dt1 = new DateTime(2020, 09, 23);
             DateTime dt2 = new DateTime(2021, 09, 23);
