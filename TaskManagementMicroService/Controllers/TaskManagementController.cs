@@ -58,35 +58,6 @@ namespace TaskManagementMicroService.Controllers
         }
 
         /// <summary>
-        /// This method returns a CSV file with list of tasks with status as inProgress
-        /// url: api/TaskManagement/TaskListInCSV
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("TaskListInCSV")]
-        public IActionResult TaskListInCSV()
-        {
-            var taskList = dbContext.Task.ToList();
-            var builder = new StringBuilder();
-            builder.AppendLine("Task Id, Task Name, Task Description, Start Date, Finish Date, State");
-            if(taskList.Count() != 0)
-            {
-                var inProgressTask = taskList.Where(x => x.State == "inProgress").ToList();
-                if (inProgressTask.Count() != 0)
-                {
-                    foreach (var t in inProgressTask)
-                    {
-                        builder.AppendLine($"{t.TaskId}, {t.TaskName},{t.TaskDescription},{t.StartDate}, {t.FinishDate}, {t.State}");
-                    }
-                    return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TaskList.csv");
-                }
-                else
-                    return StatusCode(StatusCodes.Status404NotFound);
-            }
-
-            return StatusCode(StatusCodes.Status404NotFound);
-        }
-
-        /// <summary>
         /// This is a post method that is used to add a new task to the task table
         /// URL: api/TaskManagement/Task
         /// </summary>
