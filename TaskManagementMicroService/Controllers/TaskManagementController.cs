@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementMicroService.Models;
+using TaskManagementMicroService.PostRequestModel;
 using Task = TaskManagementMicroService.Models.Task;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -124,13 +125,13 @@ namespace TaskManagementMicroService.Controllers
         /// <param name="status"></param>
         /// <returns></returns>
         [HttpPost("UpdateTaskStatus")]
-        public IActionResult UpdateTaskStatus([FromBody] int taskId, string status)
+        public IActionResult UpdateTaskStatus([FromBody] StatusUpdate requestParam)
         {
-            var task = Get(taskId);
-            var subTask = GetSubTaskList(taskId);
+            var task = Get(requestParam.taskId);
+            var subTask = GetSubTaskList(requestParam.taskId);
             if(subTask.Count() == 0)
             {
-                task.State = status;
+                task.State = requestParam.status;
                 dbContext.SaveChanges();
                 return (StatusCode(StatusCodes.Status202Accepted));
             }
@@ -147,12 +148,12 @@ namespace TaskManagementMicroService.Controllers
         /// <param name="status"></param>
         /// <returns></returns>
         [HttpPost("UpdateSubTaskStatus")]
-        public IActionResult UpdateSubTaskStatus([FromBody] int subTaskId, string status)
+        public IActionResult UpdateSubTaskStatus([FromBody] StatusUpdate requestParam)
         {
-            var subTask = dbContext.SubTask.Where(x => x.SubTaskId == subTaskId).FirstOrDefault();
+            var subTask = dbContext.SubTask.Where(x => x.SubTaskId == requestParam.taskId).FirstOrDefault();
             if (subTask != null)
             {
-                subTask.State = status;
+                subTask.State = requestParam.status;
                 dbContext.SaveChanges();
                 UpdateTask(subTask.TaskId);
                 dbContext.SaveChanges();

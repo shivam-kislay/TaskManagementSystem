@@ -5,6 +5,7 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using TaskManagementMicroService.Models;
+using TaskManagementMicroService.PostRequestModel;
 
 namespace TaskManagementMicroServiceTest
 {
@@ -50,14 +51,26 @@ namespace TaskManagementMicroServiceTest
         [Fact]
         public void TestTaskStatusUpdate()
         {
-            IActionResult actionResult = TMSController.UpdateTaskStatus(3, "Completed");
+            StatusUpdate statusParams = new StatusUpdate()
+            {
+                taskId = 3,
+                status = "Completed"
+            };
+
+            IActionResult actionResult = TMSController.UpdateTaskStatus(statusParams);
             Console.WriteLine(actionResult);
         }
 
         [Fact]
         public void TestSubTaskStatusUpdate()
         {
-            IActionResult actionResult = TMSController.UpdateSubTaskStatus(1, "inProgress");
+            StatusUpdate statusParams = new StatusUpdate()
+            {
+                taskId = 1,
+                status = "inProgress"
+            };
+
+            IActionResult actionResult = TMSController.UpdateSubTaskStatus(statusParams);
             Console.WriteLine(actionResult);
         }
 
