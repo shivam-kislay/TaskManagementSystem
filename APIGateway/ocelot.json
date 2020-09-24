@@ -37,7 +37,7 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/TaskManagement/TaskListInCSV",
+      "DownstreamPathTemplate": "/api/ReportGenerator/TaskListInCSV",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -45,7 +45,7 @@
           "Port": "44335"
         }
       ],
-      "UpstreamPathTemplate": "/TaskManagement/TaskListInCSV",
+      "UpstreamPathTemplate": "/ReportGenerator/TaskListInCSV",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
