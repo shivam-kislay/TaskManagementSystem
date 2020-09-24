@@ -127,17 +127,23 @@ namespace TaskManagementMicroService.Controllers
         [HttpPost("UpdateTaskStatus")]
         public IActionResult UpdateTaskStatus([FromBody] StatusUpdate requestParam)
         {
-            var task = Get(requestParam.taskId);
-            var subTask = GetSubTaskList(requestParam.taskId);
-            if(subTask.Count() == 0)
+            try
             {
-                task.State = requestParam.status;
-                dbContext.SaveChanges();
-                return (StatusCode(StatusCodes.Status202Accepted));
+                var task = Get(requestParam.taskId);
+                var subTask = GetSubTaskList(requestParam.taskId);
+                if (subTask.Count() == 0)
+                {
+                    task.State = requestParam.status;
+                    dbContext.SaveChanges();
+                    return (StatusCode(StatusCodes.Status202Accepted));
+                }
+                else
+                    return (StatusCode(StatusCodes.Status304NotModified));
             }
-            else
-                return (StatusCode(StatusCodes.Status304NotModified));
-            
+            catch(Exception ex)
+            {
+                return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+            }
         }
 
         /// <summary>
@@ -150,17 +156,25 @@ namespace TaskManagementMicroService.Controllers
         [HttpPost("UpdateSubTaskStatus")]
         public IActionResult UpdateSubTaskStatus([FromBody] StatusUpdate requestParam)
         {
-            var subTask = dbContext.SubTask.Where(x => x.SubTaskId == requestParam.taskId).FirstOrDefault();
-            if (subTask != null)
+            try 
             {
-                subTask.State = requestParam.status;
-                dbContext.SaveChanges();
-                UpdateTask(subTask.TaskId);
-                dbContext.SaveChanges();
-                return (StatusCode(StatusCodes.Status202Accepted));
+                var subTask = dbContext.SubTask.Where(x => x.SubTaskId == requestParam.taskId).FirstOrDefault();
+                if (subTask != null)
+                {
+                    subTask.State = requestParam.status;
+                    dbContext.SaveChanges();
+                    UpdateTask(subTask.TaskId);
+                    dbContext.SaveChanges();
+                    return (StatusCode(StatusCodes.Status202Accepted));
+                }
+                else
+                    return (StatusCode(StatusCodes.Status304NotModified));
             }
-            else
-                return (StatusCode(StatusCodes.Status304NotModified));
+            catch(Exception ex)
+            {
+                return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+            }
+            
 
         }
 
@@ -177,9 +191,17 @@ namespace TaskManagementMicroService.Controllers
             var subTaskList = GetSubTaskList(id);
             if(subTaskList.Count() == 0)
             {
-                dbContext.Task.Remove(task);
-                dbContext.SaveChanges();
-                return (StatusCode(StatusCodes.Status202Accepted));
+                try 
+                {
+                    dbContext.Task.Remove(task);
+                    dbContext.SaveChanges();
+                    return (StatusCode(StatusCodes.Status202Accepted));
+                }
+                catch(Exception ex)
+                {
+                    return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+                }
+                
             }
             
             return (StatusCode(StatusCodes.Status304NotModified));
@@ -197,11 +219,18 @@ namespace TaskManagementMicroService.Controllers
             var subTask = dbContext.SubTask.Where(x => x.SubTaskId == id).FirstOrDefault();
             if(subTask != null)
             {
-                dbContext.Remove(subTask);
-                dbContext.SaveChanges();
-                UpdateTask(subTask.TaskId);
-                dbContext.SaveChanges();
-                return (StatusCode(StatusCodes.Status202Accepted));
+                try 
+                {
+                    dbContext.Remove(subTask);
+                    dbContext.SaveChanges();
+                    UpdateTask(subTask.TaskId);
+                    dbContext.SaveChanges();
+                    return (StatusCode(StatusCodes.Status202Accepted));
+                }
+                catch(Exception ex)
+                {
+                    return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+                }
             }
             return (StatusCode(StatusCodes.Status304NotModified));
         }
