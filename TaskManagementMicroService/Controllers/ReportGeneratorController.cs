@@ -28,25 +28,32 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("TaskListInCSV")]
         public IActionResult TaskListInCSV()
         {
-            var taskList = _taskRepository.GetAll();
             var builder = new StringBuilder();
-            builder.AppendLine("Task Id, Task Name, Task Description, Start Date, Finish Date, State");
-            if (taskList.Count() != 0)
+            try 
             {
-                var inProgressTask = taskList.Where(x => x.State == _inProgress).ToList();
-                if (inProgressTask.Count() != 0)
-                {
-                    foreach (var t in inProgressTask)
-                    {
-                        builder.AppendLine($"{t.TaskId}, {t.TaskName},{t.TaskDescription},{t.StartDate}, {t.FinishDate}, {t.State}");
-                    }
-                    return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TaskList.csv");
-                }
-                else
-                    return StatusCode(StatusCodes.Status404NotFound);
-            }
-            return StatusCode(StatusCodes.Status404NotFound);
-        }
+                var taskList = _taskRepository.GetAll();
 
+                builder.AppendLine("Task Id, Task Name, Task Description, Start Date, Finish Date, State");
+                if (taskList.Count() != 0)
+                {
+                    var inProgressTask = taskList.Where(x => x.State == _inProgress).ToList();
+                    if (inProgressTask.Count() != 0)
+                    {
+                        foreach (var t in inProgressTask)
+                        {
+                            builder.AppendLine($"{t.TaskId}, {t.TaskName},{t.TaskDescription},{t.StartDate}, {t.FinishDate}, {t.State}");
+                        }
+                        return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TaskList.csv");
+                    }
+                    else
+                        return StatusCode(StatusCodes.Status404NotFound);
+                }
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }   
+        }
     }
 }

@@ -36,7 +36,15 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return _taskRepository.GetAll();
+            try 
+            {
+                return _taskRepository.GetAll();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         /// <summary>
@@ -48,7 +56,15 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("TaskByID/{id}")]
         public Task Get(int id)
         {
-            return _taskRepository.Get(id);
+            try 
+            {
+                return _taskRepository.Get(id);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         /// <summary>
@@ -145,7 +161,15 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("SubTaskByTaskID/{id}")]
         public IEnumerable<SubTask> GetSubTaskList(int id)
         {
-            return _subTaskRepository.GetAll(id);
+            try 
+            {
+                return _subTaskRepository.GetAll(id);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
         }
         
         /// <summary>
