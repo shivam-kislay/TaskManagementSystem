@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -8,15 +7,20 @@ namespace TaskManagementMicroService.Models
     public partial class SubTask
     {
         public int SubTaskId { get; set; }
+
         [Required(ErrorMessage = "Task Must Have a Name")]
         [StringLength(30)]
         public string TaskName { get; set; }
+
         [StringLength(50)]
         public string TaskDescription { get; set; }
+
         [Required(ErrorMessage = "Task Must Have a Start Date")]
         public DateTime StartDate { get; set; }
+
         [DataType(DataType.Date, ErrorMessage = "Incorrect date format")]
         public DateTime FinishDate { get; set; }
+
         [DataType(DataType.Date, ErrorMessage = "Incorrect date format")]
         public int TaskId { get; set; }
 
