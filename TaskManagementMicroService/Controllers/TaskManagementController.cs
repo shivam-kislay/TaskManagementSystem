@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementMicroService.Models;
 using TaskManagementMicroService.PostRequestModel;
-using Task = TaskManagementMicroService.Models.Task;
+using TaskManagementMicroService.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,9 +17,13 @@ namespace TaskManagementMicroService.Controllers
     public class TaskManagementController : ControllerBase
     {
         TaskManagementDatabaseSystemContext dbContext;
-        public TaskManagementController()
+        private ITaskRepository _taskRepository;
+        private ISubTaskRepository _subTaskRepository;
+        public TaskManagementController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos)
         {
             dbContext = new TaskManagementDatabaseSystemContext();
+            _taskRepository = taskRepos;
+            _subTaskRepository = subTaskRepos;
         }
 
         /// <summary>
@@ -31,7 +35,7 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return dbContext.Task.ToList();
+            return _taskRepository.GetAll();
         }
 
         /// <summary>
@@ -43,7 +47,7 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("TaskByID/{id}")]
         public Task Get(int id)
         {
-            return dbContext.Task.Where(x => x.TaskId == id).FirstOrDefault();
+            return _taskRepository.Get(id);
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("SubTaskByTaskID/{id}")]
         public IEnumerable<SubTask> GetSubTaskList(int id)
         {
-            return dbContext.SubTask.Where(x => x.TaskId == id).ToList();
+            return _subTaskRepository.GetAll(id);
         }
 
         /// <summary>

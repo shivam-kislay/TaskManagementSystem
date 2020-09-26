@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementMicroService", "TaskManagementMicroService\TaskManagementMicroService.csproj", "{D161E362-299E-4453-8569-EAC44A0F1A75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementMicroServiceTest", "TaskManagementMicroServiceTest\TaskManagementMicroServiceTest.csproj", "{E50480F5-B1C3-4CF8-9C67-7CC095173267}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementMicroServiceTest", "TaskManagementMicroServiceTest\TaskManagementMicroServiceTest.csproj", "{E50480F5-B1C3-4CF8-9C67-7CC095173267}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIGateway", "APIGateway\APIGateway.csproj", "{AF0A47B4-84BB-4E55-905A-3FDFDAA49B31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIGateway", "APIGateway\APIGateway.csproj", "{AF0A47B4-84BB-4E55-905A-3FDFDAA49B31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
