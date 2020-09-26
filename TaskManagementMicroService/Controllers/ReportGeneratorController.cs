@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementMicroService.Models;
+using TaskManagementMicroService.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,10 +13,11 @@ namespace TaskManagementMicroService.Controllers
     [ApiController]
     public class ReportGeneratorController : ControllerBase
     {
-        TaskManagementDatabaseSystemContext dbContext;
-        public ReportGeneratorController()
+        private readonly string _inProgress = "inProgress";
+        private readonly ITaskRepository _taskRepository;
+        public ReportGeneratorController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos)
         {
-            dbContext = new TaskManagementDatabaseSystemContext();
+            _taskRepository = taskRepos;
         }
 
         /// <summary>
@@ -29,12 +28,12 @@ namespace TaskManagementMicroService.Controllers
         [HttpGet("TaskListInCSV")]
         public IActionResult TaskListInCSV()
         {
-            var taskList = dbContext.Task.ToList();
+            var taskList = _taskRepository.GetAll();
             var builder = new StringBuilder();
             builder.AppendLine("Task Id, Task Name, Task Description, Start Date, Finish Date, State");
             if (taskList.Count() != 0)
             {
-                var inProgressTask = taskList.Where(x => x.State == "inProgress").ToList();
+                var inProgressTask = taskList.Where(x => x.State == _inProgress).ToList();
                 if (inProgressTask.Count() != 0)
                 {
                     foreach (var t in inProgressTask)
@@ -46,7 +45,6 @@ namespace TaskManagementMicroService.Controllers
                 else
                     return StatusCode(StatusCodes.Status404NotFound);
             }
-
             return StatusCode(StatusCodes.Status404NotFound);
         }
 

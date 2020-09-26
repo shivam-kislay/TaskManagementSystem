@@ -13,5 +13,6 @@ namespace TaskManagementMicroService.Repository
         Task Get(int id);
         void Add(Task task);
         void Remove(Task task);
+        void Save();
     }
 }

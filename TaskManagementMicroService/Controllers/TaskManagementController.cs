@@ -8,6 +8,7 @@ using TaskManagementMicroService.Models;
 using TaskManagementMicroService.PostRequestModel;
 using TaskManagementMicroService.Repository;
 
+
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskManagementMicroService.Controllers
@@ -16,12 +17,13 @@ namespace TaskManagementMicroService.Controllers
     [ApiController]
     public class TaskManagementController : ControllerBase
     {
-        TaskManagementDatabaseSystemContext dbContext;
-        private ITaskRepository _taskRepository;
-        private ISubTaskRepository _subTaskRepository;
+        private readonly string _inProgress = "inProgress";
+        private readonly string _completed = "Completed";
+        private readonly string _planned = "Planned";
+        private readonly ITaskRepository _taskRepository;
+        private readonly ISubTaskRepository _subTaskRepository;
         public TaskManagementController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos)
         {
-            dbContext = new TaskManagementDatabaseSystemContext();
             _taskRepository = taskRepos;
             _subTaskRepository = subTaskRepos;
         }
@@ -51,18 +53,6 @@ namespace TaskManagementMicroService.Controllers
         }
 
         /// <summary>
-        /// This method returns the Subtask with the input sub-taskId
-        /// url: api/TaskManagement/SubTaskByTaskID/{id}
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("SubTaskByTaskID/{id}")]
-        public IEnumerable<SubTask> GetSubTaskList(int id)
-        {
-            return _subTaskRepository.GetAll(id);
-        }
-
-        /// <summary>
         /// This is a post method that is used to add a new task to the task table
         /// URL: api/TaskManagement/Task
         /// </summary>
@@ -76,9 +66,8 @@ namespace TaskManagementMicroService.Controllers
                 if (taskModel != null)
                 {
                     // when a new task is created there will be no subtask thus set state as Planned
-                    taskModel.State = "Planned";
-                    dbContext.Task.Add(taskModel);
-                    dbContext.SaveChanges();
+                    taskModel.State = _planned;
+                    _taskRepository.Add(taskModel);
                     return StatusCode(StatusCodes.Status201Created);
                 }
                 else
@@ -88,36 +77,6 @@ namespace TaskManagementMicroService.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex);
-            }
-        }
-
-        /// <summary>
-        /// This is a post method that is used to add a new sub task to the SubTask table
-        /// and based on the state of subtasks under a parent task update the state of the 
-        /// parent task
-        /// URL: api/TaskManagement/SubTask
-        /// </summary>
-        /// <param name="subTaskModel"></param>
-        [HttpPost("SubTask")]
-        public IActionResult PostSubTask([FromBody] SubTask subTaskModel)
-        {
-            try
-            {
-                if (subTaskModel != null)
-                {
-                    dbContext.SubTask.Add(subTaskModel);
-                    dbContext.SaveChanges();
-                    UpdateTask(subTaskModel.TaskId);
-                    dbContext.SaveChanges();
-                    return StatusCode(StatusCodes.Status201Created);
-
-                }
-                else
-                    return StatusCode(StatusCodes.Status204NoContent);
-            }
-            catch (Exception ex)
-            {
-                return (StatusCode(StatusCodes.Status500InternalServerError, ex));
             }
         }
 
@@ -133,18 +92,86 @@ namespace TaskManagementMicroService.Controllers
         {
             try
             {
-                var task = Get(requestParam.taskId);
-                var subTask = GetSubTaskList(requestParam.taskId);
+                var task = _taskRepository.Get(requestParam.taskId);
+                var subTask = _subTaskRepository.GetAll(requestParam.taskId);
                 if (subTask.Count() == 0)
                 {
                     task.State = requestParam.status;
-                    dbContext.SaveChanges();
+                    _taskRepository.Save();
                     return (StatusCode(StatusCodes.Status202Accepted));
                 }
                 else
                     return (StatusCode(StatusCodes.Status304NotModified));
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+            }
+        }
+
+        /// <summary>
+        /// Method to delete the task with the given id only when
+        /// it has no subtask
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("DeleteTask/{id}")]
+        public IActionResult DeleteTask(int id)
+        {
+            var task = _taskRepository.Get(id);
+            var subTaskList = _subTaskRepository.GetAll(id);
+            if (task != null && subTaskList.Count() == 0)
+            {
+                try
+                {
+                    _taskRepository.Remove(task);
+                    return (StatusCode(StatusCodes.Status202Accepted));
+                }
+                catch (Exception ex)
+                {
+                    return (StatusCode(StatusCodes.Status500InternalServerError, ex));
+                }
+
+            }
+
+            return (StatusCode(StatusCodes.Status304NotModified));
+        }
+
+        /// <summary>
+        /// This method returns the Subtask with the input sub-taskId
+        /// url: api/TaskManagement/SubTaskByTaskID/{id}
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("SubTaskByTaskID/{id}")]
+        public IEnumerable<SubTask> GetSubTaskList(int id)
+        {
+            return _subTaskRepository.GetAll(id);
+        }
+        
+        /// <summary>
+        /// This is a post method that is used to add a new sub task to the SubTask table
+        /// and based on the state of subtasks under a parent task update the state of the 
+        /// parent task
+        /// URL: api/TaskManagement/SubTask
+        /// </summary>
+        /// <param name="subTaskModel"></param>
+        [HttpPost("SubTask")]
+        public IActionResult PostSubTask([FromBody] SubTask subTaskModel)
+        {
+            try
+            {
+                if (subTaskModel != null)
+                {
+                    _subTaskRepository.Add(subTaskModel);
+                    UpdateTask(subTaskModel.TaskId);
+                    return StatusCode(StatusCodes.Status201Created);
+
+                }
+                else
+                    return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
             {
                 return (StatusCode(StatusCodes.Status500InternalServerError, ex));
             }
@@ -162,13 +189,12 @@ namespace TaskManagementMicroService.Controllers
         {
             try 
             {
-                var subTask = dbContext.SubTask.Where(x => x.SubTaskId == requestParam.taskId).FirstOrDefault();
+                var subTask = _subTaskRepository.Get(requestParam.taskId);
                 if (subTask != null)
                 {
                     subTask.State = requestParam.status;
-                    dbContext.SaveChanges();
+                    _subTaskRepository.Save();
                     UpdateTask(subTask.TaskId);
-                    dbContext.SaveChanges();
                     return (StatusCode(StatusCodes.Status202Accepted));
                 }
                 else
@@ -178,37 +204,6 @@ namespace TaskManagementMicroService.Controllers
             {
                 return (StatusCode(StatusCodes.Status500InternalServerError, ex));
             }
-            
-
-        }
-
-        /// <summary>
-        /// Method to delete the task with the given id only when
-        /// it has no subtask
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete("DeleteTask/{id}")]
-        public IActionResult DeleteTask(int id)
-        {
-            var task = Get(id);
-            var subTaskList = GetSubTaskList(id);
-            if(subTaskList.Count() == 0)
-            {
-                try 
-                {
-                    dbContext.Task.Remove(task);
-                    dbContext.SaveChanges();
-                    return (StatusCode(StatusCodes.Status202Accepted));
-                }
-                catch(Exception ex)
-                {
-                    return (StatusCode(StatusCodes.Status500InternalServerError, ex));
-                }
-                
-            }
-            
-            return (StatusCode(StatusCodes.Status304NotModified));
         }
 
         /// <summary>
@@ -220,15 +215,13 @@ namespace TaskManagementMicroService.Controllers
         [HttpDelete("DeleteSubTask/{id}")]
         public IActionResult DeleteSubTask(int id)
         {
-            var subTask = dbContext.SubTask.Where(x => x.SubTaskId == id).FirstOrDefault();
+            var subTask = _subTaskRepository.Get(id);
             if(subTask != null)
             {
                 try 
                 {
-                    dbContext.Remove(subTask);
-                    dbContext.SaveChanges();
+                    _subTaskRepository.Remove(subTask);
                     UpdateTask(subTask.TaskId);
-                    dbContext.SaveChanges();
                     return (StatusCode(StatusCodes.Status202Accepted));
                 }
                 catch(Exception ex)
@@ -245,14 +238,15 @@ namespace TaskManagementMicroService.Controllers
         /// <param name="taskID"></param>        
         private void UpdateTask(int taskID)
         {
-            var task = Get(taskID);
-            var SubTaskList = dbContext.SubTask.Where(x => x.TaskId == taskID).ToList();
-            bool isAllCompleted = SubTaskList.All(x => x.State == "Completed");
-            bool isAnyInProgress = SubTaskList.Any(x => x.State == "inProgress");
+            var task = _taskRepository.Get(taskID);
+            var SubTaskList = _subTaskRepository.GetAll(taskID);
+            bool isAllCompleted = SubTaskList.All(x => x.State == _completed);
+            bool isAnyInProgress = SubTaskList.Any(x => x.State == _inProgress);
             if (isAllCompleted)
                 task.State = "Completed";
             else if (isAnyInProgress)
                 task.State = "inProgress";
+            _taskRepository.Save();
         }
     }
 }

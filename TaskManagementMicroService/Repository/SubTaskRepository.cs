@@ -34,5 +34,10 @@ namespace TaskManagementMicroService.Repository
             dbContext.SubTask.Remove(task);
             dbContext.SaveChanges();
         }
+
+        public void Save()
+        {
+            dbContext.SaveChanges();
+        }
     }
 }
