@@ -8,7 +8,9 @@ using TaskManagementMicroService.Models;
 using TaskManagementMicroService.PostRequestModel;
 using TaskManagementMicroService.Repository;
 using Moq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace TaskManagementMicroServiceTest
 {
@@ -18,8 +20,10 @@ namespace TaskManagementMicroServiceTest
         private readonly Mock<ISubTaskRepository> _subTaskRepository = new Mock<ISubTaskRepository>();
         private readonly Mock<ILogger<TaskManagementController>> _logger = new Mock<ILogger<TaskManagementController>>();
         private readonly TaskManagementController _taskManagementController;
-        public TaskManagementControllerTests() 
+        private readonly ITestOutputHelper _output;
+        public TaskManagementControllerTests(ITestOutputHelper output) 
         {
+            _output = output;
             _taskManagementController = new TaskManagementController(_taskRepository.Object, _subTaskRepository.Object, _logger.Object);
         }
 
@@ -28,6 +32,7 @@ namespace TaskManagementMicroServiceTest
         {
             DateTime dt1 = new DateTime(2020, 09, 23);
             DateTime dt2 = new DateTime(2021, 09, 23);
+            
 
             Task task = new Task()
             {
@@ -38,6 +43,7 @@ namespace TaskManagementMicroServiceTest
             };
             _taskRepository.Setup(x => x.Add(task));
             IActionResult result = _taskManagementController.PostTask(task);
+            _output.WriteLine(result.ToString());
         }
 
         [Fact]
@@ -56,7 +62,7 @@ namespace TaskManagementMicroServiceTest
             };
             _subTaskRepository.Setup(x => x.Add(subTask));
             IActionResult actionResult = _taskManagementController.PostSubTask(subTask);
-            Console.WriteLine(actionResult);
+            _output.WriteLine(actionResult.ToString());
         }
 
         [Fact]
@@ -93,7 +99,7 @@ namespace TaskManagementMicroServiceTest
             _subTaskRepository.Setup(x => x.GetAll(statusParams.taskId)).Returns(subTasks);
 
             IActionResult actionResult = _taskManagementController.UpdateTaskStatus(statusParams);
-            Console.WriteLine(actionResult);
+            _output.WriteLine(actionResult.ToString());
         }
 
         [Fact]
@@ -130,7 +136,7 @@ namespace TaskManagementMicroServiceTest
             _taskRepository.Setup(x => x.Get(statusParams.taskId)).Returns(task);
             _subTaskRepository.Setup(x => x.GetAll(statusParams.taskId)).Returns(subTasks);
             IActionResult actionResult = _taskManagementController.UpdateSubTaskStatus(statusParams);
-            Console.WriteLine(actionResult);
+            _output.WriteLine(actionResult.ToString());
         }
 
         [Fact]
@@ -166,7 +172,7 @@ namespace TaskManagementMicroServiceTest
             _taskRepository.Setup(x => x.Get(statusParams.taskId)).Returns(task);
             _subTaskRepository.Setup(x => x.GetAll(statusParams.taskId)).Returns(subTasks);
             IActionResult actionResult = _taskManagementController.DeleteTask(2);
-            Console.WriteLine(actionResult);
+            _output.WriteLine(actionResult.ToString());
         }
 
         [Fact]
@@ -203,7 +209,7 @@ namespace TaskManagementMicroServiceTest
             _taskRepository.Setup(x => x.Get(statusParams.taskId)).Returns(task);
             _subTaskRepository.Setup(x => x.GetAll(statusParams.taskId)).Returns(subTasks);
             IActionResult actionResult = _taskManagementController.DeleteSubTask(1);
-            Console.WriteLine(actionResult);
+            _output.WriteLine(actionResult.ToString());
         }
     }
 }
