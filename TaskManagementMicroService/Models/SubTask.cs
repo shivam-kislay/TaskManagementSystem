@@ -15,13 +15,13 @@ namespace TaskManagementMicroService.Models
         [StringLength(50)]
         public string TaskDescription { get; set; }
 
-        [Required(ErrorMessage = "Task Must Have a Start Date")]
+        [DataType(DataType.Date, ErrorMessage = "Incorrect date format")]
         public DateTime StartDate { get; set; }
 
         [DataType(DataType.Date, ErrorMessage = "Incorrect date format")]
         public DateTime FinishDate { get; set; }
 
-        [DataType(DataType.Date, ErrorMessage = "Incorrect date format")]
+        [Required(ErrorMessage = "Must Have a Parent Task ID")]
         public int TaskId { get; set; }
 
         // State can have only "Planned", "inProgress", "Completed" values

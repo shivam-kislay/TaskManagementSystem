@@ -115,7 +115,7 @@ namespace TaskManagementMicroService.Controllers
             {
                 var task = _taskRepository.Get(requestParam.taskId);
                 var subTask = _subTaskRepository.GetAll(requestParam.taskId);
-                if (subTask.Count() == 0)
+                if (subTask.Count() == 0 && task != null)
                 {
                     task.State = requestParam.status;
                     _taskRepository.Save();
@@ -123,7 +123,11 @@ namespace TaskManagementMicroService.Controllers
                 }
                 else 
                 {
-                    _logger.LogWarning("There are Subtasks Under This Task Thus Task Status Cannot be Updated");
+                    if(task == null)
+                        _logger.LogWarning($"There is no task with ID {requestParam.taskId}");
+                    else
+                        _logger.LogWarning($"There are no Subtasks Under The Task ID {requestParam.taskId}");
+
                     return (StatusCode(StatusCodes.Status304NotModified));
                 }
             }
@@ -176,7 +180,7 @@ namespace TaskManagementMicroService.Controllers
             }
             catch(Exception ex)
             {
-                throw new Exception("Error Occured While Fetching Records from Sub Task Table, Please Refer the Stack Trace for More Details", ex); ;
+                throw new Exception("Error Occured While Fetching Records from Sub Task Table, Refer the Stack Trace ", ex); ;
             }
             
         }
