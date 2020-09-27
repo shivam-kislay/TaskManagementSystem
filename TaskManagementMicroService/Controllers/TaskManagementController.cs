@@ -42,7 +42,7 @@ namespace TaskManagementMicroService.Controllers
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw new Exception("Error Occured While Fetching Records from Task Table, Please Refer the Stack Trace for More Details", ex);
             }
             
         }
@@ -62,7 +62,7 @@ namespace TaskManagementMicroService.Controllers
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw new Exception("Error Occured While Fetching This Record from Task Table, Please Refer the Stack Trace for More Details", ex); ;
             }
             
         }
@@ -167,7 +167,7 @@ namespace TaskManagementMicroService.Controllers
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw new Exception("Error Occured While Fetching Records from Sub Task Table, Please Refer the Stack Trace for More Details", ex); ;
             }
             
         }
@@ -261,15 +261,23 @@ namespace TaskManagementMicroService.Controllers
         /// <param name="taskID"></param>        
         private void UpdateTask(int taskID)
         {
-            var task = _taskRepository.Get(taskID);
-            var SubTaskList = _subTaskRepository.GetAll(taskID);
-            bool isAllCompleted = SubTaskList.All(x => x.State == _completed);
-            bool isAnyInProgress = SubTaskList.Any(x => x.State == _inProgress);
-            if (isAllCompleted)
-                task.State = "Completed";
-            else if (isAnyInProgress)
-                task.State = "inProgress";
-            _taskRepository.Save();
+            try 
+            {
+                var task = _taskRepository.Get(taskID);
+                var SubTaskList = _subTaskRepository.GetAll(taskID);
+                bool isAllCompleted = SubTaskList.All(x => x.State == _completed);
+                bool isAnyInProgress = SubTaskList.Any(x => x.State == _inProgress);
+                if (isAllCompleted)
+                    task.State = _completed;
+                else if (isAnyInProgress)
+                    task.State = _inProgress;
+                _taskRepository.Save();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Error Occured While Updating The Task Table", ex);
+            }
+            
         }
     }
 }
