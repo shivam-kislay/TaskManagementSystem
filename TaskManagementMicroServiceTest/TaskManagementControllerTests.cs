@@ -8,6 +8,7 @@ using TaskManagementMicroService.Models;
 using TaskManagementMicroService.PostRequestModel;
 using TaskManagementMicroService.Repository;
 using Moq;
+using Microsoft.Extensions.Logging;
 
 namespace TaskManagementMicroServiceTest
 {
@@ -15,10 +16,11 @@ namespace TaskManagementMicroServiceTest
     {
         private readonly Mock<ITaskRepository> _taskRepository = new Mock<ITaskRepository>();
         private readonly Mock<ISubTaskRepository> _subTaskRepository = new Mock<ISubTaskRepository>();
+        private readonly Mock<ILogger<TaskManagementController>> _logger = new Mock<ILogger<TaskManagementController>>();
         private readonly TaskManagementController _taskManagementController;
         public TaskManagementControllerTests() 
         {
-            _taskManagementController = new TaskManagementController(_taskRepository.Object, _subTaskRepository.Object);
+            _taskManagementController = new TaskManagementController(_taskRepository.Object, _subTaskRepository.Object, _logger.Object);
         }
 
         [Fact]

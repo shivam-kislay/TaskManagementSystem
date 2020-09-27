@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using TaskManagementMicroService.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,9 +16,11 @@ namespace TaskManagementMicroService.Controllers
     {
         private readonly string _inProgress = "inProgress";
         private readonly ITaskRepository _taskRepository;
-        public ReportGeneratorController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos)
+        private readonly ILogger _logger;
+        public ReportGeneratorController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos, ILogger<ReportGeneratorController> logger)
         {
             _taskRepository = taskRepos;
+            _logger = logger;
         }
 
         /// <summary>
@@ -45,9 +48,14 @@ namespace TaskManagementMicroService.Controllers
                         }
                         return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "TaskList.csv");
                     }
-                    else
+                    else 
+                    {
+                        _logger.LogInformation("No task with Status in Progress");
                         return StatusCode(StatusCodes.Status404NotFound);
+                    }
+                        
                 }
+                _logger.LogWarning("Task Table has no rows");
                 return StatusCode(StatusCodes.Status404NotFound);
             }
             catch(Exception ex)

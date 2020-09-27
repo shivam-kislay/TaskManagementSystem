@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using TaskManagementMicroService.Models;
 using TaskManagementMicroService.PostRequestModel;
 using TaskManagementMicroService.Repository;
@@ -21,10 +22,12 @@ namespace TaskManagementMicroService.Controllers
         private readonly string _planned = "Planned";
         private readonly ITaskRepository _taskRepository;
         private readonly ISubTaskRepository _subTaskRepository;
-        public TaskManagementController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos)
+        private readonly ILogger _logger;
+        public TaskManagementController(ITaskRepository taskRepos, ISubTaskRepository subTaskRepos, ILogger<TaskManagementController> logger)
         {
-            _taskRepository = taskRepos;
-            _subTaskRepository = subTaskRepos;
+            this._taskRepository = taskRepos;
+            this._subTaskRepository = subTaskRepos;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -62,9 +65,8 @@ namespace TaskManagementMicroService.Controllers
             }
             catch(Exception ex)
             {
-                throw new Exception("Error Occured While Fetching This Record from Task Table, Please Refer the Stack Trace for More Details", ex); ;
+                throw new Exception($"Error Occured While Fetching Record ID {id} from Task Table, Please Refer the Stack Trace for More Details", ex); ;
             }
-            
         }
 
         /// <summary>
@@ -85,8 +87,12 @@ namespace TaskManagementMicroService.Controllers
                     _taskRepository.Add(taskModel);
                     return StatusCode(StatusCodes.Status201Created);
                 }
-                else
+                else 
+                {
+                    _logger.LogWarning("Empty Object Passed");
                     return StatusCode(StatusCodes.Status204NoContent);
+                }
+                    
 
             }
             catch (Exception ex)
@@ -115,8 +121,11 @@ namespace TaskManagementMicroService.Controllers
                     _taskRepository.Save();
                     return (StatusCode(StatusCodes.Status202Accepted));
                 }
-                else
+                else 
+                {
+                    _logger.LogWarning("There are Subtasks Under This Task Thus Task Status Cannot be Updated");
                     return (StatusCode(StatusCodes.Status304NotModified));
+                }
             }
             catch (Exception ex)
             {
@@ -191,8 +200,12 @@ namespace TaskManagementMicroService.Controllers
                     return StatusCode(StatusCodes.Status201Created);
 
                 }
-                else
+                else 
+                {
+                    _logger.LogWarning("Empty sub task Object passed as a parameter");
                     return StatusCode(StatusCodes.Status204NoContent);
+                }
+                    
             }
             catch (Exception ex)
             {
@@ -220,8 +233,12 @@ namespace TaskManagementMicroService.Controllers
                     UpdateTask(subTask.TaskId);
                     return (StatusCode(StatusCodes.Status202Accepted));
                 }
-                else
+                else 
+                {
+                    _logger.LogWarning($"There is no subtask with ID {requestParam.taskId}");
                     return (StatusCode(StatusCodes.Status304NotModified));
+                }
+                    
             }
             catch(Exception ex)
             {
@@ -252,6 +269,7 @@ namespace TaskManagementMicroService.Controllers
                     return (StatusCode(StatusCodes.Status500InternalServerError, ex));
                 }
             }
+            _logger.LogWarning($"There is no sub task with ID {id}");
             return (StatusCode(StatusCodes.Status304NotModified));
         }
 
@@ -265,19 +283,24 @@ namespace TaskManagementMicroService.Controllers
             {
                 var task = _taskRepository.Get(taskID);
                 var SubTaskList = _subTaskRepository.GetAll(taskID);
-                bool isAllCompleted = SubTaskList.All(x => x.State == _completed);
-                bool isAnyInProgress = SubTaskList.Any(x => x.State == _inProgress);
-                if (isAllCompleted)
-                    task.State = _completed;
-                else if (isAnyInProgress)
-                    task.State = _inProgress;
-                _taskRepository.Save();
+                if (task != null && SubTaskList.Count() != 0)
+                {
+                    bool isAllCompleted = SubTaskList.All(x => x.State == _completed);
+                    bool isAnyInProgress = SubTaskList.Any(x => x.State == _inProgress);
+                    if (isAllCompleted)
+                        task.State = _completed;
+                    else if (isAnyInProgress)
+                        task.State = _inProgress;
+                    _taskRepository.Save();
+                }
+                else
+                    _logger.LogWarning("The task list or the subtask under the parent task is empty");
+                
             }
             catch(Exception ex)
             {
                 throw new Exception("Error Occured While Updating The Task Table", ex);
             }
-            
         }
     }
 }
