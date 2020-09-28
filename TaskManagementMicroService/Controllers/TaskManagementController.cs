@@ -197,7 +197,7 @@ namespace TaskManagementMicroService.Controllers
         {
             try
             {
-                if (subTaskModel != null)
+                if (subTaskModel != null && subTaskModel.TaskId != 0)
                 {
                     _subTaskRepository.Add(subTaskModel);
                     UpdateTask(subTaskModel.TaskId);
@@ -206,7 +206,14 @@ namespace TaskManagementMicroService.Controllers
                 }
                 else 
                 {
-                    _logger.LogWarning("Empty sub task Object passed as a parameter");
+                    if(subTaskModel.TaskId == 0)
+                    {
+                        _logger.LogWarning("Subtask must have a parent task ID");
+                        return StatusCode(StatusCodes.Status206PartialContent);
+                    }
+                    else
+                        _logger.LogWarning("Empty sub task Object passed as a parameter");
+
                     return StatusCode(StatusCodes.Status204NoContent);
                 }
                     
