@@ -1,16 +1,17 @@
 using System;
 using TaskManagementMicroService.Controllers;
-using Task = TaskManagementMicroService.Models.Task;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using TaskManagementMicroService.Models;
-using TaskManagementMicroService.PostRequestModel;
-using TaskManagementMicroService.Repository;
+//using TaskManagementDomain.Models;
+//using TaskManagementDomain.Repository;
 using Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
+using TaskManagementMicroService.Models;
+using TaskManagementMicroService.Repository;
+using TaskManagementMicroService.PostRequestModel;
 
 namespace TaskManagementMicroServiceTest
 {
@@ -70,7 +71,7 @@ namespace TaskManagementMicroServiceTest
         {
             DateTime dt1 = new DateTime(2020, 09, 23);
             DateTime dt2 = new DateTime(2020, 12, 23);
-            StatusUpdate statusParams = new StatusUpdate()
+            TaskManagementMicroService.PostRequestModel.StatusUpdate statusParams = new StatusUpdate()
             {
                 taskId = 5,
                 status = "Completed"

@@ -4,9 +4,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+//using TaskManagementDomain.Models;
+//using TaskManagementDomain.Repository;
+//using TaskManagementMicroService.Models;
 using TaskManagementMicroService.Models;
-using TaskManagementMicroService.PostRequestModel;
 using TaskManagementMicroService.Repository;
+using TaskManagementMicroService.PostRequestModel;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,9 +20,9 @@ namespace TaskManagementMicroService.Controllers
     [ApiController]
     public class TaskManagementController : ControllerBase
     {
-        private readonly string _inProgress = "inProgress";
-        private readonly string _completed = "Completed";
-        private readonly string _planned = "Planned";
+        private const string _inProgress = "inProgress";
+        private const string _completed = "Completed";
+        private const string _planned = "Planned";
         private readonly ITaskRepository _taskRepository;
         private readonly ISubTaskRepository _subTaskRepository;
         private readonly ILogger _logger;

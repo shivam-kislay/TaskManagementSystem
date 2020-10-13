@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
-namespace TaskManagementMicroService.Models
+namespace TaskManagementDomain.Models
 {
     public partial class TaskManagementDatabaseSystemContext : DbContext
     {
@@ -22,7 +23,7 @@ namespace TaskManagementMicroService.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                //warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=LAPTOP-KTVD108G\\SQLEXPRESS;Initial Catalog=TaskManagementDatabaseSystem;Integrated Security=True");
             }
         }
@@ -38,6 +39,7 @@ namespace TaskManagementMicroService.Models
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
                 entity.Property(e => e.State)
+                    .IsRequired()
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
@@ -56,7 +58,7 @@ namespace TaskManagementMicroService.Models
                     .WithMany(p => p.SubTask)
                     .HasForeignKey(d => d.TaskId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__SubTask__TaskID__2A4B4B5E");
+                    .HasConstraintName("FK__SubTask__TaskID__38996AB5");
             });
 
             modelBuilder.Entity<Task>(entity =>
@@ -68,6 +70,7 @@ namespace TaskManagementMicroService.Models
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
                 entity.Property(e => e.State)
+                    .IsRequired()
                     .HasMaxLength(10)
                     .IsUnicode(false);
 

@@ -120,8 +120,5 @@
       "UpstreamPathTemplate": "/TaskManagement/DeleteSubTask/{id}",
       "UpstreamHttpMethod": [ "DELETE" ]
     }
-  ],
-  "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:44300/"
-  }
+  ]
 }
